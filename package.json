@@ -1,0 +1,29 @@
+{
+  "name": "carsapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./build/bin/www",
+    "build": "gulp build",
+    "dev": "gulp dev"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "del": "^2.2.2",
+    "express": "~4.15.2",
+    "express-handlebars": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-react": "^3.1.0",
+    "morgan": "~1.8.1",
+    "pug": "~2.0.0-beta11",
+    "ravendb": "^0.1.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "sqlite3": "~3.1.4"
+  },
+  "devDependencies": {
+    "gulp-nodemon": "^2.2.1"
+  }
+}

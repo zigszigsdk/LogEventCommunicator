@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+
+			{{#if title}}
+				<title>{{title}}</title>
+			{{else}}
+				<title>cars demo</title>
+			{{/if}}
+
+			{{#each earlyScripts}}
+				<script type="text/javascript" src="{{this}}"></script>
+			{{/each}}
+
+		</head>
+	<body>
+		<div>
+			{{#if username}}
+				Logged in as {{username}}.
+				<input type="submit" value="Log out" onclick="window.location='/logout';" />
+				<input type="submit" value="Manage my cars" onclick="window.location='/mycars';" />
+			{{else}}
+				Not logged in.
+				<input type="submit" value="Log in" onclick="window.location='/login';" />
+				<input type="submit" value="Register" onclick="window.location='/register';" />
+			{{/if}}
+		</div>
+
+		<ul>
+			{{#each serverMessages}}
+				<li>{{{this}}}</li>
+			{{/each}}
+		</ul>
+
+		{{{body}}}
+
+		{{#each lateScripts}}
+			<script type="text/javascript" src="{{this}}"></script>
+		{{/each}}
+	</body>
+</html>
