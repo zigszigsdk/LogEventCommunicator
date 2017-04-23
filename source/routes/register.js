@@ -18,8 +18,8 @@ router.post('/', function (req, res)
 		, [req.body.username, req.body.password, JSON.stringify({idCounter:0,cars:[]})]
 	);
 
-	res.viewData.serverMessages.push("registration completed");
-	res.render('register', res.viewData);
+	req.session.serverMessages.push("registration completed");
+	res.redirect('/');
 });
 
 module.exports = router;

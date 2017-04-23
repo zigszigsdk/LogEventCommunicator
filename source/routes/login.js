@@ -16,15 +16,15 @@ router.post('/', function (req, res)
 			{
 				if(result.count === 0)
 				{
-					res.viewData.serverMessages.push("incorrect username or password")
+					res.viewData.serverMessages.push("incorrect username or password");
 					return res.render('login', res.viewData);
 				}
 
-				res.cookie("username", req.body.username);
-    			res.viewData.username = req.body.username;
+				req.session.username = req.body.username;
+				res.viewData.username = req.body.username;
 
-				res.viewData.serverMessages.push("successfully logged in");
-				res.render('login', res.viewData)
+				req.session.serverMessages.push("successfully logged in");
+				res.redirect('/');
 			}
 		);
 });

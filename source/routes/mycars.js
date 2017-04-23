@@ -11,7 +11,7 @@ function isNullOrUndefined(x)
 
 router.get('/mycarmodel', function(req, res)
 {
-	if(isNullOrUndefined(res.viewData.username))
+	if(isNullOrUndefined(req.session.username))
 		return res.sendStatus(401)
 
 	const db = new sqlite3.Database('databases/database.sqlite3');
@@ -27,7 +27,7 @@ router.get('/mycarmodel', function(req, res)
 
 router.get('/', function (req, res)
 {
-	if(isNullOrUndefined(res.viewData.username))
+	if(isNullOrUndefined(req.session.username))
 		return res.redirect('/');
 
 	res.viewData.earlyScripts =
@@ -43,12 +43,12 @@ router.get('/', function (req, res)
 
 router.post('/', function (req, res)
 {
-	if(isNullOrUndefined(res.viewData.username))
+	if(isNullOrUndefined(req.session.username))
 		return res.sendStatus(401);
 
 	const db = new sqlite3.Database('databases/database.sqlite3');
 	db.run("UPDATE users SET cars=? WHERE username=?"
-	,	[req.body.cars, res.viewData.username]
+	,	[req.body.cars, req.session.username]
 	,	function(error, result)
 		{
 			function response()

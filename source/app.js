@@ -5,7 +5,9 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const exphbs  = require('express-handlebars');
+const exphbs = require('express-handlebars');
+const session = require('express-session');
+const redisSession = require('connect-redis')(session);
 
 const app = express();
 
@@ -32,14 +34,27 @@ function middlewarePipeline()
 	app.use(logger('dev'));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use(cookieParser()); //not secure
+	app.use(cookieParser());
+
+	app.use(session({
+	  resave: false,
+	  saveUninitialized: false,
+	  secret: 'keyboard cat',
+	  store: new redisSession()
+	}))
 
 	app.use(function(req, res, next)
 	{
+		if(typeof req.session.serverMessages === 'undefined')
+			req.session.serverMessages = [];
+
 		res.viewData =
-			{	username: req.cookies.username //not secure
-			,	serverMessages: []
+			{	username: req.session.username
+			,	serverMessages: req.session.serverMessages
 			};
+
+		req.session.serverMessages = [];
+
 		next();
 	});
 }
