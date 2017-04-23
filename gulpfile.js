@@ -67,7 +67,7 @@ gulp.task(TASK.RUN, build, function ()
 		{ script: 'build/bin/www'
 		, tasks: build
 		, env: { 'NODE_ENV': 'development' }
-		, watch: ["source"]
+		, watch: ["source", "package.json"]
 		, ext: 'js jsx json handlebars'
 		});
 
