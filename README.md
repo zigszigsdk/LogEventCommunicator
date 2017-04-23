@@ -6,6 +6,7 @@ In order to install on a clean debian 8.7 server, do the following:
 ```
 sudo apt-get update
 sudo apt-get install curl
+sudo apt-get install redis-server
 sudo apt-get install git
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
 ```
