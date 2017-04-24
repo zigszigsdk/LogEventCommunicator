@@ -10,12 +10,6 @@ router.get('/', function(req, res, next)
 	res.render('register', res.viewData);
 });
 
-router.get('verificationCode', function(req, res, next)
-{
-	console.log()
-	res.render('register', res.viewData);
-});
-
 router.post('/', function (req, res)
 {
 	const db = new sqlite3.Database('databases/database.sqlite3');
