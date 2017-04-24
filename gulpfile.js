@@ -48,6 +48,7 @@ gulp.task(TASK.DB, [], function()
 	if (!fs.existsSync(dir))
     	fs.mkdirSync(dir);
 
+
 	const db = new sqlite3.Database('databases/database.sqlite3');
 
 	db.get("SELECT COUNT(*) AS count FROM sqlite_master where type='table' AND name='users'",
@@ -55,6 +56,13 @@ gulp.task(TASK.DB, [], function()
 		{
 			if(result.count === 0)
 				db.run("CREATE TABLE users (username TEXT, password TEXT,cars TEXT)");
+		});
+
+	db.get("SELECT COUNT(*) AS count FROM sqlite_master where type='table' AND name='unconfirmedUsers'",
+		function(error, result)
+		{
+			if(result.count === 0)
+				db.run("CREATE TABLE unconfirmedUsers (username TEXT, password TEXT,verificationCode TEXT)");
 		});
 });
 
