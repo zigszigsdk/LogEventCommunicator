@@ -8,6 +8,10 @@ const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const redisSession = require('connect-redis')(session);
+const nodemailer = require('nodemailer');
+
+const development = process.env.NODE_ENV !== 'production';
+const config = development ? require('./config.dev.json') : require('./config.prod.json');
 
 const app = express();
 
@@ -57,6 +61,7 @@ function middlewarePipeline()
 
 		next();
 	});
+
 }
 
 function routeRegistration()
@@ -67,6 +72,9 @@ function routeRegistration()
 	app.use('/', index);
 	app.use('/index', index);
 	app.use('/home', index);
+
+	const registerConfirm = require('./routes/registerConfirm');
+	app.use('/registerConfirm', registerConfirm);
 
 	const register = require('./routes/register');
 	app.use('/register', register);

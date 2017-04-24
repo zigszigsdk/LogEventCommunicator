@@ -1,0 +1,15 @@
+{	"emailTransporterOptions":
+	{	"_comment":	"nodemailer transporter - see nodemailer for config, such as gmail lesssecure"
+	,	"service": "gmail"
+	,	"auth":
+		{	"user": "carsappnoreply@gmail.com"
+		,	"pass": "rDhAZgs8fzSm83prnEBFFfEj"
+		}
+	}
+,	"noreplyEmailDisplay":
+	{
+		"address": "carsappnoreply@gmail.com"
+	,	"name":	"cars app demo"
+	}
+,	"externalAddress": "http://localhost:3000/"
+}

@@ -20,7 +20,9 @@ cd carsapp
 sudo npm install sqlite3 -g
 npm install
 npm run build
+export NODE_ENV=production
 npm start
 ```
+Edit externalAddress in source/config.prod.json to reflect your domain or external ip.
 The app should now serve requests on port 3000.
 For automatic updates while developing, use `npm run dev`
