@@ -25,6 +25,7 @@ class Controller extends React.Component
 				}.bind(this)
 		,	error:
 				function(xhr, status, err) {
+					alert("Update failed. Refresh the page or try again later");
 					console.error(this.props.url, status, err.toString());
 				}.bind(this)
 		});
@@ -170,6 +171,7 @@ $.ajax(
 	,	error:
 			function(xhr, status, err)
 			{
+				alert("Page loading failed. Refresh the page or try again later")
 				console.error(fetchDataUrl, status, err.toString());
 			}.bind(this)
 	}
