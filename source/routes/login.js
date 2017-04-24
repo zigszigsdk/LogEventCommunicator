@@ -10,7 +10,7 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res)
 {
 	const db = new sqlite3.Database('databases/database.sqlite3');
-	db.get("SELECT COUNT(*) AS count FROM users where username=? AND password=?"
+	db.get("SELECT COUNT(*) AS count FROM users where username=? AND password=?;"
 		,	[req.body.username, req.body.password]
 		,	function(error, result)
 			{
