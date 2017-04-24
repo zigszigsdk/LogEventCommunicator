@@ -40,12 +40,15 @@ function middlewarePipeline()
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(cookieParser(config.cookieSecret));
 
+	app.use(require('sanitize').middleware);
+
 	app.use(function(req, res, next)
 	{
 		res.config = config;
 		res.emailTransporter = nodemailer.createTransport(config.emailTransporterOptions);
 		next();
 	});
+
 
 	app.use(session({
 	  resave: false,

@@ -4,6 +4,19 @@ const express = require('express');
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 
+function isValidJson(candidate)
+{
+    try
+    {
+        JSON.parse(candidate);
+    }
+    catch (e)
+    {
+        return false;
+    }
+    return true;
+}
+
 function isNullOrUndefined(x)
 {
 	return x === null || typeof x === 'undefined';
@@ -12,7 +25,7 @@ function isNullOrUndefined(x)
 router.get('/mycarmodel', function(req, res)
 {
 	if(isNullOrUndefined(req.session.username))
-		return res.sendStatus(401)
+		return res.sendStatus(401);
 
 	const db = new sqlite3.Database('databases/database.sqlite3');
 
@@ -46,7 +59,11 @@ router.post('/', function (req, res)
 	if(isNullOrUndefined(req.session.username))
 		return res.sendStatus(401);
 
+	if(!isValidJson(req.body.cars))
+		return res.sendStatus(400);
+
 	const db = new sqlite3.Database('databases/database.sqlite3');
+
 	db.run("UPDATE users SET cars=? WHERE username=?"
 	,	[req.body.cars, req.session.username]
 	,	function(error, result)
