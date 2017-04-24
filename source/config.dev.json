@@ -11,5 +11,6 @@
 		"address": "carsappnoreply@gmail.com"
 	,	"name":	"cars app demo"
 	}
+,	"cookieSecret": "X6b6SEg7DF6akvT7f5aT"
 ,	"externalAddress": "http://localhost:3000/"
 }

@@ -25,10 +25,10 @@ function viewSetup()
 	let viewsPath = path.join(__dirname, 'views');
 	app.set('views', viewsPath);
 	app.engine('handlebars', exphbs({
-        extname: 'handlebars',
-        partialsDir: viewsPath,
-        layoutsDir: viewsPath + "/layouts",
-        defaultLayout: 'main'
+		extname: 'handlebars',
+		partialsDir: viewsPath,
+		layoutsDir: viewsPath + "/layouts",
+		defaultLayout: 'main'
 }));
 	app.set('view engine', 'handlebars');
 }
@@ -38,14 +38,21 @@ function middlewarePipeline()
 	app.use(logger('dev'));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use(cookieParser());
+	app.use(cookieParser(config.cookieSecret));
+
+	app.use(function(req, res, next)
+	{
+		res.config = config;
+		res.emailTransporter = nodemailer.createTransport(config.emailTransporterOptions);
+		next();
+	});
 
 	app.use(session({
 	  resave: false,
 	  saveUninitialized: false,
-	  secret: 'keyboard cat',
+	  secret: config.cookieSecret,
 	  store: new redisSession()
-	}))
+	}));
 
 	app.use(function(req, res, next)
 	{
