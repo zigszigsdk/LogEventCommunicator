@@ -42,6 +42,9 @@ router.post('/', function (req, res)
 		return res.render('register', res.viewData);
 	}
 
+	res.viewData.username = req.body.username;
+	res.viewData.email = req.body.email;
+
 	const db = new sqlite3.Database('databases/database.sqlite3');
 
 	db.get("SELECT COUNT(*) AS count FROM users WHERE username=?;"
