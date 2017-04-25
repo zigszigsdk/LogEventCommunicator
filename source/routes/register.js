@@ -5,6 +5,11 @@ const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 const uuidV1 = require('uuid/v1');
 
+function isNullOrUndefined(x)
+{
+	return x === null || typeof x === 'undefined';
+}
+
 function isValidEmail(candidate)
 {
 	//from http://emailregex.com/
@@ -39,33 +44,61 @@ router.post('/', function (req, res)
 
 	const db = new sqlite3.Database('databases/database.sqlite3');
 
-	const verificationCode = uuidV1();
+	db.get("SELECT COUNT(*) AS count FROM users WHERE username=?;"
+	,	[req.body.username]
+	,	function(error, result)
+		{
+			if(error)
+				return console.log(error);
 
-	db.run("INSERT INTO unconfirmedUsers(username,password,verificationCode) VALUES(?,?,?);"
-		,	[req.body.username, req.body.password, verificationCode]
-		,	function(error, result)
+			if(result.count !== 0)
 			{
-				if (error)
-					return console.log(error);
+				res.viewData.serverMessages.push("username '" + req.body.username + "' is taken");
+				return res.render('register', res.viewData);
+			}
 
-				const mailOptions =
-				{	from: '"' + res.config.noreplyEmailDisplay.name +
-						'" <' + res.config.noreplyEmailDisplay.address + '>'
-				,	to: req.body.email
-				,	subject: 'email verification link'
-				,	text: 'please visit the following link to verify your Cars Demo account: ' +
-					res.config.externalAddress + "registerConfirm?verificationCode=" + verificationCode
-				};
-
-				res.emailTransporter.sendMail(mailOptions, function(error, info)
+			db.get("SELECT COUNT(*) AS count FROM unconfirmedUsers WHERE username=?;"
+			,	[req.body.username]
+			,	function(error, result)
 				{
-					if (error)
+					if(error)
 						return console.log(error);
 
-					req.session.serverMessages.push("verification email has been sent. It probably landed in your spam folder.. :) ");
-					res.redirect('/');
+					if(result.count !== 0)
+					{
+						res.viewData.serverMessages.push("username '" + req.body.username + "' is taken");
+						return res.render('register', res.viewData);
+					}
+
+					const verificationCode = uuidV1();
+
+					db.run("INSERT INTO unconfirmedUsers(username,password,verificationCode) VALUES(?,?,?);"
+						,	[req.body.username, req.body.password, verificationCode]
+						,	function(error, result)
+							{
+								if (error)
+									return console.log(error);
+
+								const mailOptions =
+								{	from: '"' + res.config.noreplyEmailDisplay.name +
+										'" <' + res.config.noreplyEmailDisplay.address + '>'
+								,	to: req.body.email
+								,	subject: 'email verification link'
+								,	text: 'please visit the following link to verify your Cars Demo account: ' +
+									res.config.externalAddress + "registerConfirm?verificationCode=" + verificationCode
+								};
+
+								res.emailTransporter.sendMail(mailOptions, function(error, info)
+								{
+									if (error)
+										return console.log(error);
+
+									req.session.serverMessages.push("verification email has been sent. It probably landed in your spam folder.. :) ");
+									res.redirect('/');
+								});
+						});
 				});
-	});
+		});
 });
 
 module.exports = router;
