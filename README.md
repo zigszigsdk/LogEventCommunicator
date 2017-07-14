@@ -1,5 +1,5 @@
 # Carsapp
-a demonstration of node, react and a bunch of other things.
+A starting point project which demonstrates how to use Node with React in a complete project rather than the incomplete shortcut-filled snippet-list blog-tutorial format which ravage the Node community.
 
 ### Installation
 In order to install on a clean debian 8.7 server, do the following:
