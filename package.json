@@ -1,23 +1,21 @@
 {
-  "name": "carsapp",
+  "name": "log-event-communicator",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./build/bin/www",
+    "start": "node ./build/bin/www.js",
     "build": "gulp build",
     "dev": "gulp dev"
   },
   "dependencies": {
+    "express": "~4.15.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.2",
     "body-parser": "~1.17.1",
     "connect-redis": "^3.2.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "del": "^2.2.2",
-    "express": "~4.15.2",
-    "express-handlebars": "^3.0.0",
-    "express-session": "^1.15.2",
-    "gulp": "^3.9.1",
-    "gulp-react": "^3.1.0",
     "morgan": "~1.8.1",
     "nodemailer": "^4.0.1",
     "pug": "~2.0.0-beta11",
@@ -26,7 +24,13 @@
     "react-dom": "^15.5.4",
     "sanitize": "^2.0.1",
     "sqlite3": "~3.1.4",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-react": "^3.1.0",
+    "merge2": "^1.2.0",
+    "gulp-webpack-typescript-pipeline": "^8.0.0",
+    "@types/node": "^8.0.53",
+    "@types/react": "^16.0.23"  
   },
   "devDependencies": {
     "gulp-nodemon": "^2.2.1"

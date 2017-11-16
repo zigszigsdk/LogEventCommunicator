@@ -1,27 +1,56 @@
+const extensionsToCopy = [".js", ".json"];
+
+const tsEntrypoints = 	
+	[ ['helloworld','/source/public/js/helloworld.tsx']
+	];
+
+const tsOutputDir ='/build/public/bundles/';
+
+//--------------------------------------------------------------------------------
+
 const gulp = require('gulp');
 const react = require('gulp-react');
 const del = require('del')
-const anyFile = 'source/**/*';
-const anyReact = 'source/**/*.jsx';
+const merge = require('merge2');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+const tsPipeline = require('gulp-webpack-typescript-pipeline');
 
-const buildLocation = "build/";
+const buildLocation = __dirname + "/build/";
+const anyFile = 'source/**/*'
+const anyJsx = anyFile + '.jsx';
+const anyTs = anyFile + '.ts';
+const anyTsx = anyFile + '.tsx';
+
+const tsEntrypointsParsed = {}
+
+for(let index in tsEntrypoints)
+	tsEntrypointsParsed[tsEntrypoints[index][0]] = __dirname + tsEntrypoints[index][1];
+
+tsPipeline.registerBuildGulpTasks(
+	gulp
+,	{	entryPoints: tsEntrypointsParsed
+	,	outputDir: __dirname + tsOutputDir
+	}
+);
 
 const TASK =
 	{ CLEAN: 'remove previous build'
-	, REACT: 'transpile react'
-	, COPY: 'copy other files'
+	, TS: 'transpile typescript (inc tsx)'
+	, JSX: 'transpile react'
+	, COPY: 'copying rest'
 	, DB: 'manage db'
 	, RUN: 'run and watch for changes'
+	, TSCLEAN: 'removing .map files from build'
 	};
 
-const build = [TASK.CLEAN, TASK.REACT, TASK.COPY, TASK.DB];
+const build = [TASK.CLEAN, TASK.TS, TASK.TSCLEAN, TASK.JSX, TASK.COPY, TASK.DB];
 const devRun = [TASK.RUN];
 
 gulp.task('default', build);
 gulp.task('build', build);
 gulp.task('dev', devRun);
+
 
 function NOT(exp){ return "!"+exp; }
 
@@ -30,15 +59,32 @@ gulp.task(TASK.CLEAN, function()
 	return del(['build/**/*']);
 });
 
-gulp.task(TASK.REACT, [TASK.CLEAN], function () {
-	return gulp.src(anyReact)
+
+gulp.task(TASK.TS, [TASK.CLEAN], function ()
+{	
+	return gulp.start('tsPipeline:build:dev');
+});
+
+gulp.task(TASK.TSCLEAN, ['tsPipeline:build:dev'], function()
+{
+	return del(['build/**/*.map']);
+});
+
+
+gulp.task(TASK.JSX, [TASK.CLEAN], function ()
+{
+	return gulp.src(anyJsx)
 		.pipe(react())
 		.pipe(gulp.dest(buildLocation));
 });
 
-gulp.task(TASK.COPY, [TASK.CLEAN], function() {
-	return gulp.src([anyFile, NOT(anyReact)])
-		.pipe(gulp.dest(buildLocation));
+gulp.task(TASK.COPY, [TASK.CLEAN], function()
+{
+	let files = [];
+	for(let index in extensionsToCopy)
+		files.push(anyFile + extensionsToCopy[index]);
+
+	return gulp.src(files).pipe(gulp.dest(buildLocation))
 });
 
 gulp.task(TASK.DB, [], function()
@@ -46,7 +92,7 @@ gulp.task(TASK.DB, [], function()
 	var dir = './databases';
 
 	if (!fs.existsSync(dir))
-    	fs.mkdirSync(dir);
+		fs.mkdirSync(dir);
 
 
 	const db = new sqlite3.Database('databases/database.sqlite3');
@@ -72,11 +118,11 @@ gulp.task(TASK.RUN, build, function ()
 	const nodemon = require('gulp-nodemon');
 
 	const stream = nodemon(
-		{ script: 'build/bin/www'
+		{ script: buildLocation + 'bin/www.js'
 		, tasks: build
 		, env: { 'NODE_ENV': 'development' }
 		, watch: ["source", "package.json"]
-		, ext: 'js jsx json handlebars'
+		, ext: 'js jsx ts tsx json handlebars'
 		});
 
 	stream
