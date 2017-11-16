@@ -1,10 +1,10 @@
-const extensionsToCopy = [".js", ".json"];
+const extensionsToCopy = [".js", ".json", ".handlebars"];
 
 const tsEntrypoints = 	
 	[ ['helloworld','/source/public/js/helloworld.tsx']
 	];
 
-const tsOutputDir ='/build/public/bundles/';
+const tsOutputDir ='/build/public/js/';
 
 //--------------------------------------------------------------------------------
 
@@ -41,10 +41,9 @@ const TASK =
 	, COPY: 'copying rest'
 	, DB: 'manage db'
 	, RUN: 'run and watch for changes'
-	, TSCLEAN: 'removing .map files from build'
 	};
 
-const build = [TASK.CLEAN, TASK.TS, TASK.TSCLEAN, TASK.JSX, TASK.COPY, TASK.DB];
+const build = [TASK.CLEAN, TASK.TS, TASK.JSX, TASK.COPY, TASK.DB];
 const devRun = [TASK.RUN];
 
 gulp.task('default', build);
@@ -63,11 +62,6 @@ gulp.task(TASK.CLEAN, function()
 gulp.task(TASK.TS, [TASK.CLEAN], function ()
 {	
 	return gulp.start('tsPipeline:build:dev');
-});
-
-gulp.task(TASK.TSCLEAN, ['tsPipeline:build:dev'], function()
-{
-	return del(['build/**/*.map']);
 });
 
 

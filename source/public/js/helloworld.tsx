@@ -1,9 +1,15 @@
-import * as React from 'React';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-class HelloWorld extends React.Component<any, any>
+export class HelloWorld extends React.Component<any, any>
 {
-	render()
+	public render()
 	{
-		return <div>Hello world!</div>;
+		return <div>Hello world from react!</div>;
 	}
-};
+}
+
+ReactDOM.render
+(   <HelloWorld compiler='TypeScript' framework='React' />
+,   document.getElementById('react-root'),
+);
