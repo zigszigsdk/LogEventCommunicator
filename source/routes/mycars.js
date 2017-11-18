@@ -6,15 +6,15 @@ const sqlite3 = require('sqlite3').verbose();
 
 function isValidJson(candidate)
 {
-    try
-    {
-        JSON.parse(candidate);
-    }
-    catch (e)
-    {
-        return false;
-    }
-    return true;
+	try
+	{
+		JSON.parse(candidate);
+	}
+	catch (e)
+	{
+		return false;
+	}
+	return true;
 }
 
 function isNullOrUndefined(x)
@@ -50,7 +50,7 @@ router.get('/', function (req, res)
 		];
 	res.viewData.lateScripts = ["/public/js/mycars.js"];
 
-    res.render('mycars', res.viewData);
+	res.render('mycars', res.viewData);
 });
 
 

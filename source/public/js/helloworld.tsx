@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-export class HelloWorld extends React.Component<any, any>
+class HelloWorld extends React.Component<any, any>
 {
 	public render()
 	{

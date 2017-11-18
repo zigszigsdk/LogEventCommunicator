@@ -6,7 +6,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 router.get('/', function (req, res)
 {
-    res.render('login', res.viewData);
+	res.render('login', res.viewData);
 });
 
 router.post('/', function (req, res)
