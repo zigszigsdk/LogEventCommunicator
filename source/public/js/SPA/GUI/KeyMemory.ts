@@ -80,6 +80,7 @@ export class KeyMemory
 		return true;
 	}
 
+	//repetition for interface consistancy
 	public subscribeOnUp(key: string, callback: keyboardEventCallback)
 	{
 		this.subscribe(key, callback, this.subscriptions.keyUp);
@@ -88,6 +89,36 @@ export class KeyMemory
 	public unsubscribeOnUp(key: string, callback: keyboardEventCallback)
 	{
 		this.unsubscribe(key, callback, this.subscriptions.keyUp);
+	}
+
+	public subscribeOnDown(key: string, callback: keyboardEventCallback)
+	{
+		this.subscribe(key, callback, this.subscriptions.keyDown);
+	}
+
+	public unsubscribeOnDown(key: string, callback: keyboardEventCallback)
+	{
+		this.unsubscribe(key, callback, this.subscriptions.keyDown);
+	}
+
+	public subscribeOnUpClean(key: string, callback: keyboardEventCallback)
+	{
+		this.subscribe(key, callback, this.subscriptions.keyUpClean);
+	}
+
+	public unsubscribeOnUpClean(key: string, callback: keyboardEventCallback)
+	{
+		this.unsubscribe(key, callback, this.subscriptions.keyUpClean);
+	}
+
+	public subscribeOnDownAlone(key: string, callback: keyboardEventCallback)
+	{
+		this.subscribe(key, callback, this.subscriptions.keyDownAlone);
+	}
+
+	public unsubscribeOnDownAlone(key: string, callback: keyboardEventCallback)
+	{
+		this.unsubscribe(key, callback, this.subscriptions.keyDownAlone);
 	}
 
 	private subscribe(
