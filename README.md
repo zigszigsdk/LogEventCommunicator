@@ -1,5 +1,12 @@
-# Carsapp
-A starting point project which demonstrates how to use Node with React in a complete project rather than the incomplete shortcut-filled snippet-list blog-tutorial format which ravage the Node community.
+# LogEventCommunicator
+Still in development.
+
+Why: Small organizations need an all-round software that can get their logs, reports, prints and emails done in one smooth action such that they can get back their actual task at hand.
+
+How: Integration of logging in a wiki-like page structure, emails that grand permission to see certain logs, print picker and formatter and more.
+
+What: A nodejs-express server backend and React (.tsx specifically) single-page frontend, written with domain/problem-specific tailoring in mind.
+
 
 ### Installation
 In order to install on a clean debian 8.7 server, do the following:
@@ -15,8 +22,8 @@ reset the terminal, then do:
 nvm install 6.10.2
 sudo ln -s "$(which nodejs)" /usr/bin/node
 sudo apt-get install npm
-git clone https://github.com/zigszigsdk/carsapp.git
-cd carsapp
+git clone https://github.com/zigszigsdk/LogEventCommunicator.git
+cd LogEventCommunicator
 sudo npm install sqlite3 -g
 npm install
 npm run build

@@ -16,7 +16,6 @@ router.post('/', function (req, res)
 		res.viewData.serverMessages.push("invalid username");
 		return res.render('login', res.viewData);
 	}
-	res.viewData.username = req.body.username;
 
 	if(req.body.password.length === 0)
 	{

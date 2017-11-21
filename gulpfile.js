@@ -1,10 +1,10 @@
 const extensionsToCopy = [".js", ".json", ".handlebars"];
 
 const tsEntrypoints = 	
-	[ ['helloworld','/source/public/js/helloworld.tsx']
+	[ ['main','/source/public/js/SPA/main.tsx']
 	];
 
-const tsOutputDir ='/build/public/js/';
+const tsOutputDir ='/build/public/js/SPA';
 
 //--------------------------------------------------------------------------------
 

@@ -95,8 +95,8 @@ function routeRegistration()
 	const logout = require('./routes/logout');
 	app.use('/logout', logout);
 
-	const mycars = require('./routes/mycars');
-	app.use('/mycars', mycars);
+	const spa = require('./routes/spa');
+	app.use('/spa', spa);
 
 	app.use(function(req, res, next)
 	{

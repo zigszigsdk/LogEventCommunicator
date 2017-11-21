@@ -15,18 +15,6 @@
 
 		</head>
 	<body>
-		<div>
-			{{#if username}}
-				Logged in as {{username}}.
-				<input type="submit" value="Log out" onclick="window.location='/logout';" />
-				<input type="submit" value="open spa" onclick="window.location='/spa';" />
-			{{else}}
-				Not logged in.
-				<input type="submit" value="Log in" onclick="window.location='/login';" />
-				<input type="submit" value="Register" onclick="window.location='/register';" />
-			{{/if}}
-		</div>
-
 		<ul>
 			{{#each serverMessages}}
 				<li>{{{this}}}</li>

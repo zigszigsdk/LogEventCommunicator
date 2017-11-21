@@ -86,8 +86,8 @@ router.post('/', function (req, res)
 								{	from: '"' + res.config.noreplyEmailDisplay.name +
 										'" <' + res.config.noreplyEmailDisplay.address + '>'
 								,	to: req.body.email
-								,	subject: 'email verification link'
-								,	text: 'please visit the following link to verify your Cars Demo account: ' +
+								,	subject: 'LogEventCommunicator: Email verification link'
+								,	text: 'please visit the following link to verify your LogEventCommunicator account: ' +
 									res.config.externalAddress + "registerConfirm?verificationCode=" + verificationCode
 								};
 

@@ -22,7 +22,7 @@ function isNullOrUndefined(x)
 	return x === null || typeof x === 'undefined';
 }
 
-router.get('/mycarmodel', function(req, res)
+/*router.get('/getData', function(req, res)
 {
 	if(isNullOrUndefined(req.session.username))
 		return res.sendStatus(401);
@@ -37,22 +37,18 @@ router.get('/mycarmodel', function(req, res)
 			}
 	);
 });
+	*/
 
 router.get('/', function (req, res)
 {
 	if(isNullOrUndefined(req.session.username))
 		return res.redirect('/');
 
-	res.viewData.earlyScripts =
-		[ "https://unpkg.com/react@15/dist/react.js"
-		, "https://unpkg.com/react-dom@15/dist/react-dom.js"
-		, "https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"
-		];
-	res.viewData.lateScripts = ["/public/js/mycars.js"];
-
-	res.render('mycars', res.viewData);
+ 	res.viewData.lateScripts = ["/public/js/SPA/main.js"];
+	res.viewData.layout = 'spa';
+	res.render('spa', res.viewData);
 });
-
+/*
 
 router.post('/', function (req, res)
 {
@@ -78,5 +74,6 @@ router.post('/', function (req, res)
 		}
 	);
 });
+*/
 
 module.exports = router;
