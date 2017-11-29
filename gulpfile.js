@@ -1,4 +1,4 @@
-const extensionsToCopy = [".js", ".json", ".handlebars"];
+const extensionsToCopy = [".js", ".json", ".handlebars", ".css"];
 
 const tsEntrypoints = 	
 	[ ['main','/source/public/js/SPA/main.tsx']
@@ -6,6 +6,8 @@ const tsEntrypoints =
 
 const tsOutputDir ='/build/public/js/SPA';
 
+const extensionsToWatch = 'js jsx ts tsx json handlebars css';
+const locationsToWatch = ["source", "package.json"]
 //--------------------------------------------------------------------------------
 
 const gulp = require('gulp');
@@ -115,8 +117,8 @@ gulp.task(TASK.RUN, build, function ()
 		{ script: buildLocation + 'bin/www.js'
 		, tasks: build
 		, env: { 'NODE_ENV': 'development' }
-		, watch: ["source", "package.json"]
-		, ext: 'js jsx ts tsx json handlebars'
+		, watch: locationsToWatch
+		, ext: extensionsToWatch
 		});
 
 	stream

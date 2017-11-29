@@ -6,6 +6,7 @@ export interface MenubarProps
 {
 	hotkey: string //eg "alt"
 	menubarItems: Array<DropdownItemProps>
+	offset: [number, number]
 }
 
 interface MenubarState 
@@ -17,9 +18,10 @@ export class Menubar extends React.Component<MenubarProps, MenubarState>
 {
 	public static makeTag(props: MenubarProps): JSX.Element
 	{
-		return <Menubar 
+		return <Menubar
 				hotkey={props.hotkey} 
 				menubarItems={props.menubarItems}
+				offset={props.offset}
 				/>
 	}
 
@@ -38,11 +40,26 @@ export class Menubar extends React.Component<MenubarProps, MenubarState>
 
 	public render(): JSX.Element
 	{
-		return <div>
-			{this.props.menubarItems.map(
-				(props: DropdownItemProps) =>
-				{	return DropdownItem.makeTag(props)}
-			)}
-		</div>;
+		const ownStyle = 
+			{ left: this.props.offset[0]
+			, top: this.props.offset[1]
+			};
+
+		let childOffsetX = 0;
+		let children = this.props.menubarItems.map(
+			(props: DropdownItemProps, index: number) =>
+			{
+				props.offset = [childOffsetX, 0];
+				props.childOfMenubar = true;
+
+				childOffsetX += DropdownItem.getWidth(props) + 10;
+				
+				return DropdownItem.makeTag(props);
+			}
+		);
+
+		return <span style={ownStyle}>
+			{children}
+		</span>;
 	}
 }

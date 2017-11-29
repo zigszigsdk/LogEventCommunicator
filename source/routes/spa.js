@@ -22,7 +22,20 @@ function isNullOrUndefined(x)
 	return x === null || typeof x === 'undefined';
 }
 
-/*router.get('/getData', function(req, res)
+router.get('/', function (req, res)
+{
+	if(isNullOrUndefined(req.session.username))
+		return res.redirect('/');
+
+	res.viewData.css = ["/public/css/spa.css"];
+ 	res.viewData.lateScripts = ["/public/js/SPA/main.js"];
+	res.viewData.layout = 'spa';
+	res.render('spa', res.viewData);
+});
+
+/*
+
+router.get('/getData', function(req, res)
 {
 	if(isNullOrUndefined(req.session.username))
 		return res.sendStatus(401);
@@ -37,18 +50,6 @@ function isNullOrUndefined(x)
 			}
 	);
 });
-	*/
-
-router.get('/', function (req, res)
-{
-	if(isNullOrUndefined(req.session.username))
-		return res.redirect('/');
-
- 	res.viewData.lateScripts = ["/public/js/SPA/main.js"];
-	res.viewData.layout = 'spa';
-	res.render('spa', res.viewData);
-});
-/*
 
 router.post('/', function (req, res)
 {

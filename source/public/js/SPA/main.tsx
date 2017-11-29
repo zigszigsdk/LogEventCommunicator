@@ -14,12 +14,18 @@ function t2()
 {
 	console.log("t2!");
 }
+function t3()
+{
+	console.log("t3!");
+}
+
 class Main extends React.Component<null, null>
 {
 	public render(): JSX.Element
 	{
 		const menubarProps: MenubarProps =
 		{	hotkey: "Tab"
+		,	offset: [5, 5]
 		,	menubarItems:
 			[
 				{	label: "_File"
@@ -32,13 +38,23 @@ class Main extends React.Component<null, null>
 						}
 					]
 				}
-			,	{	label: "_Test"
+			,	{	label: "_TopMenu"
 				,	hotkey: "t"
 				,	submenu:
 					[
-						{	label: "_TestTest"
-						,	hotkey: "t"
-						,	clickAction: t1
+						{	label: "_MiddleMenu"
+						,	hotkey: "m"
+						,	submenu:
+							[
+								{	label: "_subMenu"
+								,	hotkey: "s"
+								,	clickAction: t1
+								}
+							]
+						}
+					,	{	label: "_reallyLongLabelToMessThingsUp"
+						,	hotkey: "r"
+						,	clickAction: t3
 						}
 					]
 				}

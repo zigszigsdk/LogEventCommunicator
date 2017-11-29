@@ -30,7 +30,9 @@
     "merge2": "^1.2.0",
     "gulp-webpack-typescript-pipeline": "^8.0.0",
     "@types/node": "^8.0.53",
-    "@types/react-dom": "^16.0.3"  
+    "@types/react-dom": "^16.0.3",
+    "@types/jquery":  "^3.2.16",
+    "jquery": "^3.2.1"
   },
   "devDependencies": {
     "gulp-nodemon": "^2.2.1"

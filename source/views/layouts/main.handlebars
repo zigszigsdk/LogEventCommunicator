@@ -8,7 +8,9 @@
 			{{else}}
 				<title>cars demo</title>
 			{{/if}}
-
+			{{#each css}}
+				<link rel="stylesheet" type="text/css" href="{{this}}">
+			{{/each}}
 			{{#each earlyScripts}}
 				<script type="text/javascript" src="{{this}}"></script>
 			{{/each}}
