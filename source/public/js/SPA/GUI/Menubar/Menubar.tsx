@@ -52,7 +52,7 @@ export class Menubar extends React.Component<MenubarProps, MenubarState>
 				props.offset = [childOffsetX, 0];
 				props.childOfMenubar = true;
 
-				childOffsetX += DropdownItem.getWidth(props) + 10;
+				childOffsetX += DropdownItem.getWidth(props);
 				
 				return DropdownItem.makeTag(props);
 			}

@@ -74,8 +74,8 @@ export class DropdownItem extends React.Component<DropdownItemProps, DropdownIte
 
 		const ownStyle: React.CSSProperties = 
 			{ width: this.props.widestSibling
-			, borderRightStyle: this.props.childOfMenubar ? "none" : "solid"
-			, borderLeftStyle: this.props.childOfMenubar ? "none" : "solid"
+			, borderRightStyle: "solid"
+			, borderLeftStyle: "solid"
 			, borderTopStyle: this.props.isFirstChild ? "solid" : "none"
 			, borderBottomStyle: this.props.isLastChild ? "solid" : "none"
 			, whiteSpace: "nowrap"
@@ -97,12 +97,13 @@ export class DropdownItem extends React.Component<DropdownItemProps, DropdownIte
 			this.props.childOfMenubar
 			? 0 
 			: this.props.widestSibling + borderWidth;
-			
+
 		let yOffset = this.props.childOfMenubar ? 16 : 0;
 
 		return <span style={offsetStyle}>
 			<span
-				className={this.props.childOfMenubar ? "MenuBar" : "DropdownItem"}
+				className={(this.props.childOfMenubar ? "MenuBar" : "DropdownItem")
+					+ " unselectable"}
 				style={ownStyle}
 				onClick={this.onClick}
 				onKeyDown={keyMemory.onKeyDown}
