@@ -1,65 +1,83 @@
 import * as React from 'react';	
-import {DropdownItemProps, DropdownItem} from './DropdownItem';
-import {KeyMemory} from '../KeyMemory';
+import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases} from '../GUIElement';
+import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, MenuItemDefinition, Styles, DropdownMenuEvent} from './DropdownMenu';
+import * as $ from 'jquery';
 
-export interface MenubarProps
+const menuHeight = 18;
+
+interface MenubarProps extends DropdownMenuProps {}
+interface MenubarState extends DropdownMenuState {}
+interface MenubarEvent extends DropdownMenuEvent {}
+
+export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEvent>
 {
-	hotkey: string //eg "alt"
-	menubarItems: Array<DropdownItemProps>
-	offset: [number, number]
-}
-
-interface MenubarState 
-{
-	thisOrChildHasFocus: boolean
-}
-
-export class Menubar extends React.Component<MenubarProps, MenubarState>
-{
-	public static makeTag(props: MenubarProps): JSX.Element
-	{
-		return <Menubar
-				hotkey={props.hotkey} 
-				menubarItems={props.menubarItems}
-				offset={props.offset}
-				/>
-	}
-
+	protected typeName = "Menubar";
+	
 	constructor(props: MenubarProps)
 	{
 		super(props);
-		this.state = {thisOrChildHasFocus: false};
-		let keyMemory = KeyMemory.getInstance();
-		keyMemory.subscribeOnUp(props.hotkey, this.recieveFocus);
-	}
-
-	private recieveFocus = (event: KeyboardEventInit) =>
-	{
-		console.log(event.key + " focus!");
-	}
-
-	public render(): JSX.Element
-	{
-		const ownStyle = 
-			{ left: this.props.offset[0]
-			, top: this.props.offset[1]
+		this.state = 
+			{ focusType: FocusTypes.none
+			, focusAt: -1 
 			};
+	}
 
-		let childOffsetX = 0;
-		let children = this.props.menubarItems.map(
-			(props: DropdownItemProps, index: number) =>
-			{
-				props.offset = [childOffsetX, 0];
-				props.childOfMenubar = true;
+	/*override*/ protected getStyles(): Styles
+	{
+		return {
+			  label: 
+				{ left: this.props.offset.left
+				, top: this.props.offset.top
+				}
+			, submenu:
+				{ left: this.props.offset.left
+				, top: this.props.offset.top + menuHeight
+				}
+			};
+	}
 
-				childOffsetX += DropdownItem.getWidth(props);
-				
-				return DropdownItem.makeTag(props);
+	/*override*/ protected incrementStyles(menuItemDef: MenuItemDefinition, newStyles: Styles): Styles
+	{
+		const width = this.getWidth(menuItemDef)
+		newStyles.label.left += width;
+		newStyles.submenu.left += width;
+		return newStyles;
+	}
+
+	protected getWidth(menuItem: MenuItemDefinition): number
+	{
+		const renderObject = 
+			$('<span>' + menuItem.label + '</span>')
+			.css({'visibility': 'hidden'})
+			.appendTo($('body'));
+		
+		const width = renderObject.width();
+		renderObject.remove();
+		
+		return width;
+	}
+
+	/*override*/ protected onMouseEnter(id: Id, event: MenubarEvent): MenubarEvent
+	{
+		if(event.phase !== EventPhases.ready)
+			return event;
+
+		const focusType = this.state.focusType === FocusTypes.child 
+			? FocusTypes.child
+			: FocusTypes.self;
+
+		this.setState(
+			{ focusAt: id.index
+			, focusType: focusType
 			}
 		);
-
-		return <span style={ownStyle}>
-			{children}
-		</span>;
+		event.phase = EventPhases.consumed;
+		return event;
 	}
+
+	/*override*/ protected onMouseLeave(id: Id, event: MenubarEvent): MenubarEvent
+	{
+		return event; //get sticky focus unlike super
+	}
+
 }

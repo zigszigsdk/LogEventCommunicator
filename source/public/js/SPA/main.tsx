@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {Menubar, MenubarProps} from './GUI/Menubar/Menubar';
+import {MenuItemDefinition} from "./GUI/Menubar/DropdownMenu";
+import {Menubar} from './GUI/Menubar/Menubar';
+import {GUIElement, GUIProps, GUIState, MouseEvent, Id, GUIElementUpstream, UpstreamEvent, EventPhases} from "./GUI/GUIElement";
 
 function logout()
 {
@@ -19,61 +21,88 @@ function t3()
 	console.log("t3!");
 }
 
-class Main extends React.Component<null, null>
+class Main extends React.Component<any, any> implements GUIElementUpstream
 {
 	public render(): JSX.Element
 	{
-		const menubarProps: MenubarProps =
-		{	hotkey: "Tab"
-		,	offset: [5, 5]
-		,	menubarItems:
+		const menuRoot: Array<MenuItemDefinition> =
 			[
-				{	label: "_File"
+				{	label: "File"
 				,	hotkey: "F"
 				,	submenu:
 					[
-						{	label: "_Log out"
+						{	label: "Log out"
 						,	hotkey: "L"
-						,	clickAction: logout
+						,	action: logout
 						}
 					]
 				}
-			,	{	label: "_TopMenu"
+			,	{	label: "TopMenu"
 				,	hotkey: "t"
 				,	submenu:
 					[
-						{	label: "_MiddleMenu"
+						{	label: "MiddleMenu"
 						,	hotkey: "m"
 						,	submenu:
 							[
-								{	label: "_subMenu"
-								,	hotkey: "s"
-								,	clickAction: t1
+								{	label: "SubLabel"
+								,	hotkey: "l"
+								,	action: t1
+								}
+							,	{	label: "SubMenu"
+								,	hotkey: "m"
+								,	submenu:
+									[	{ label: "SubSubLabel"
+										, hotkey: "l"
+										, action: t1
+										}
+									,	{ label: "SubSubMenu"
+										, hotkey: "m"
+										, submenu:
+											[	{ label: "finalLabel"
+												, hotkey: "f"
+												, action: t1
+												}
+											]
+										}
+									]
 								}
 							]
 						}
-					,	{	label: "_reallyLongLabelToMessThingsUp"
+					,	{	label: "Centerlabel"
+						,	hotkey: "c"
+						,	action: t3
+						}
+					,	{	label: "ReallyLongLabelToMessThingsUp"
 						,	hotkey: "r"
-						,	clickAction: t3
+						,	action: t3
 						}
 					]
 				}
-			,	{	label: "T_est"
+			,	{	label: "Test"
 				,	hotkey: "e"
 				,	submenu:
 					[
 						{	label: "Test2"
 						,	hotkey: "t"
-						,	clickAction: t2
+						,	action: t2
 						}
 					]
 				}
-			]
-		};
+			];
 
 		return <div>
-			{Menubar.makeTag(menubarProps)}
+			<Menubar
+				parent={this}
+				offset={{left:10, top:10}}
+				subMenu={menuRoot}
+			/>
 		</div>;
+	}
+
+	public recieveUpstreamEvent(childId: Id, event: UpstreamEvent): UpstreamEvent
+	{
+		return event;
 	}
 }
 
