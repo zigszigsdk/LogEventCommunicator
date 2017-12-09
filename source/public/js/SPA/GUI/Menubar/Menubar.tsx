@@ -1,6 +1,6 @@
 import * as React from 'react';	
 import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases} from '../GUIElement';
-import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, MenuItemDefinition, Styles, DropdownMenuEvent} from './DropdownMenu';
+import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, Styles, DropdownMenuEvent, Child} from './DropdownMenu';
 import * as $ from 'jquery';
 
 const menuHeight = 18;
@@ -11,7 +11,11 @@ interface MenubarEvent extends DropdownMenuEvent {}
 
 export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEvent>
 {
-	protected typeName = "Menubar";
+	static defaultProps: MenubarProps = 
+		{ parent: null
+		, offset: {left: 0, top: 0}
+		, dynamicTypeName: "Menubar"
+		};
 	
 	constructor(props: MenubarProps)
 	{
@@ -36,25 +40,18 @@ export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEve
 			};
 	}
 
-	/*override*/ protected incrementStyles(menuItemDef: MenuItemDefinition, newStyles: Styles): Styles
+	/*override*/ protected incrementStyles(child: Child, prevChild: Child, newStyles: Styles): Styles
 	{
-		const width = this.getWidth(menuItemDef)
-		newStyles.label.left += width;
-		newStyles.submenu.left += width;
-		return newStyles;
-	}
+		newStyles.label.width = this.getWidth(child);
 
-	protected getWidth(menuItem: MenuItemDefinition): number
-	{
-		const renderObject = 
-			$('<span>' + menuItem.label + '</span>')
-			.css({'visibility': 'hidden'})
-			.appendTo($('body'));
+		if(prevChild === undefined)
+			return newStyles;
 		
-		const width = renderObject.width();
-		renderObject.remove();
+		const prevChildWidth = this.getWidth(prevChild)
+		newStyles.label.left += prevChildWidth;
+		newStyles.submenu.left += prevChildWidth;
 		
-		return width;
+		return newStyles;
 	}
 
 	/*override*/ protected onMouseEnter(id: Id, event: MenubarEvent): MenubarEvent

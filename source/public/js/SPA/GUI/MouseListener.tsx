@@ -7,7 +7,11 @@ interface MouseListenerState extends GUIState{}
 export class MouseListener 
 	extends GUIElement<MouseListenerProps, MouseListenerState, UpstreamEvent>
 {
-	protected typeName = "MouseListener";
+	static defaultProps: MouseListenerProps = 
+		{ parent: null
+		, offset: {left: 0, top: 0}
+		, dynamicTypeName: "MouseListenerProps"
+		};
 	
 	public render(): JSX.Element
 	{
