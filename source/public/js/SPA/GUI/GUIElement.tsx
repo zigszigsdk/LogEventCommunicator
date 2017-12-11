@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {DynamicTypedProps} from "TypedReactChildren"
 
 export enum MouseEventTriggerTypes 
 {	onClick="onClick"
@@ -59,7 +58,7 @@ export interface Offset
 	top: number
 }
 
-export interface GUIProps extends DynamicTypedProps
+export interface GUIProps
 {
 	parent?: GUIElementUpstream
 	id?: Id
@@ -75,7 +74,6 @@ export abstract class GUIElement<P extends GUIProps, S extends GUIState,
 	static defaultProps: GUIProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
-		, dynamicTypeName: "GUIElement"
 		};
 
 	constructor(props)
@@ -168,10 +166,10 @@ export abstract class GUIElement<P extends GUIProps, S extends GUIState,
 	private getId(): Id
 	{
 		if(this.props.id === undefined)
-			return {type: this.props.dynamicTypeName, index: -1}
+			return {type: this+'', index: -1}
 		
 		if(this.props.id.type === undefined)
-			return {type: this.props.dynamicTypeName, index: this.props.id.index}
+			return {type: this+'', index: this.props.id.index}
 
 		return this.props.id;
 	}

@@ -14,8 +14,9 @@ export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEve
 	static defaultProps: MenubarProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
-		, dynamicTypeName: "Menubar"
 		};
+
+	protected cssName = "Menubar"
 	
 	constructor(props: MenubarProps)
 	{

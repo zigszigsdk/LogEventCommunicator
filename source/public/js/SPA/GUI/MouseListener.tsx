@@ -10,7 +10,6 @@ export class MouseListener
 	static defaultProps: MouseListenerProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
-		, dynamicTypeName: "MouseListenerProps"
 		};
 	
 	public render(): JSX.Element

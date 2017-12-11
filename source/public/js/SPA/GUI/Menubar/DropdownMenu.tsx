@@ -45,11 +45,11 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 	static defaultProps: DropdownMenuProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
-		, dynamicTypeName: "DropdownMenu"
 		, label: ""
 		, hotkey: ""
 		};
 
+	protected cssName: string = "DropdownMenu";
 	protected subElements: Array<DropdownMenuProps> = []
 
 	constructor(props: DropdownMenuProps)
@@ -68,49 +68,49 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 
 		let styles = this.getStyles();
 		let prevChild: Child = undefined;
+		
+		const iterator = (child: Child, index: number) =>
+		{
+			styles = this.incrementStyles(child, prevChild, $.extend(true, {}, styles));
+			prevChild = child;
 
-		TypedReactChildren.forEach<DropdownMenuProps>(
-			this.props.children,
-			DropdownMenu.defaultProps.dynamicTypeName,
-			(child: Child, index: number) =>
-			{
-				styles = this.incrementStyles(child, prevChild, $.extend(true, {}, styles));
-				prevChild = child;
+			const className: string = this.cssName + 
+							(this.state.focusAt === index ? "--highlight" : "");
 
-				const className: string = this.props.dynamicTypeName + 
-								(this.state.focusAt === index ? "--highlight" : "");
-
-				menuItems.push(
-					<MouseListener 
-						parent={this}
-						key={index}
-						id={{index: index, type:ChildTypes.label}}
-						offset={this.props.offset}
+			menuItems.push(
+				<MouseListener 
+					parent={this}
+					key={"label"+index}
+					id={{index: index, type:ChildTypes.label}}
+					offset={this.props.offset}
+				>
+					<span
+						className={className}
+						style={styles.label}
 					>
-						<span
-							className={className}
-							style={styles.label}
-						>
-							{child.props.label}
-						</span>
-					</MouseListener>
+						{child.props.label}
+					</span>
+				</MouseListener>
+			);
+			
+			if(this.state.focusType === FocusTypes.child &&
+				this.state.focusAt === index
+			)
+			{
+				child.props.offset = styles.submenu;
+				child.props.parent = this;
+				submenus.push(
+					<span key={"submenu"+index}>
+						{child}
+					</span>
 				);
-				
-				if(this.state.focusType === FocusTypes.child &&
-					this.state.focusAt === index
-				)
-				{
-					child.props.offset = styles.submenu;
-					child.props.parent = this;
-					submenus.push(
-						<span key={index}>
-							{child}
-						</span>
-					);
-				}
+			}
 
-				this.subElements.push(child.props);
-			});
+			this.subElements.push(child.props);
+		};
+		
+		TypedReactChildren.forEachOfType<Child>(
+			this.props.children, DropdownMenu, iterator, true);
 
 		return <span>
 			{menuItems}
@@ -122,15 +122,14 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 	{
 		let widest = 0;
 
-		TypedReactChildren.forEach<DropdownMenuProps>(
-			this.props.children,
-			DropdownMenu.defaultProps.dynamicTypeName,
+		TypedReactChildren.forEachOfType<Child>(this.props.children, DropdownMenu,
 			(child: Child, index: number) =>
 			{
 				const width = this.getWidth(child); 
 				if(width > widest)
 					widest = width;
-		});
+			}
+		);
 
 		return {
 			  label: 
