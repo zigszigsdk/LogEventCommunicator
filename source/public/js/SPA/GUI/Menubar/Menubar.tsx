@@ -1,22 +1,24 @@
 import * as React from 'react';	
 import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases} from '../GUIElement';
-import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, Styles, DropdownMenuEvent, Child} from './DropdownMenu';
+import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, Styles, DropdownMenuUpstream, DropdownMenuDownstream, Child} from './DropdownMenu';
 import * as $ from 'jquery';
 
 const menuHeight = 18;
 
 interface MenubarProps extends DropdownMenuProps {}
 interface MenubarState extends DropdownMenuState {}
-interface MenubarEvent extends DropdownMenuEvent {}
+interface MenubarUpstream extends DropdownMenuUpstream {}
+interface MenubarDownstream extends DropdownMenuDownstream {}
 
-export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEvent>
+export class Menubar 
+	extends DropdownMenu<MenubarProps, MenubarState, MenubarUpstream, MenubarDownstream>
 {
 	static defaultProps: MenubarProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
 		};
 
-	protected cssName = "Menubar"
+	/*override*/ protected cssName = "Menubar"
 	
 	constructor(props: MenubarProps)
 	{
@@ -55,7 +57,7 @@ export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEve
 		return newStyles;
 	}
 
-	/*override*/ protected onMouseEnter(id: Id, event: MenubarEvent): MenubarEvent
+	/*override*/ protected onMouseEnter(id: Id, event: MenubarUpstream): MenubarUpstream
 	{
 		if(event.phase !== EventPhases.ready)
 			return event;
@@ -73,7 +75,7 @@ export class Menubar extends DropdownMenu<MenubarProps, MenubarState, MenubarEve
 		return event;
 	}
 
-	/*override*/ protected onMouseLeave(id: Id, event: MenubarEvent): MenubarEvent
+	/*override*/ protected onMouseLeave(id: Id, event: MenubarUpstream): MenubarUpstream
 	{
 		return event; //get sticky focus unlike super
 	}

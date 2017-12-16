@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {DropdownMenu} from "./GUI/Menubar/DropdownMenu";
 import {Menubar} from './GUI/Menubar/Menubar';
-import {GUIElement, GUIProps, GUIState, MouseEvent, Id, GUIElementUpstream, UpstreamEvent, EventPhases} from "./GUI/GUIElement";
+import {DownstreamEvent, GUIElement, GUIProps, GUIState, MouseEvent, Id, GUIElementUpstream, UpstreamEvent, EventPhases} from "./GUI/GUIElement";
+import {GUIRoot} from "./GUI/GUIRoot";
 
 function logout()
 {
@@ -21,14 +22,12 @@ function t3()
 	console.log("t3!");
 }
 
-class Main extends React.Component<any, any> implements GUIElementUpstream
+class Main extends GUIRoot
 {
-	public render(): JSX.Element
-	{
-		return <div>
-			<Menubar parent={this} offset={{left:10, top:10}}>
-				test1
-				<div>test2</div>
+	private menubarRef: any;
+
+	content = <div>
+			<Menubar ref={(x)=>this.menubarRef=x} parent={this} offset={{left:10, top:10}}>
 				<DropdownMenu label="File" hotkey="f">
 					<DropdownMenu label="Logout" hotkey="l" action={logout}/>
 				</DropdownMenu>
@@ -48,6 +47,10 @@ class Main extends React.Component<any, any> implements GUIElementUpstream
 				<DropdownMenu label="bare topmenu item" hotkey="l" action={t3}/>
 			</Menubar>
 		</div>;
+
+	public recieveDownstreamEvent(event: DownstreamEvent): boolean
+	{
+		return this.menubarRef.recieveDownstreamEvent(event);
 	}
 
 	public recieveUpstreamEvent(childId: Id, event: UpstreamEvent): UpstreamEvent

@@ -42,14 +42,34 @@ export interface UpstreamEvent
 	phase: EventPhases
 }
 
+
 export interface GUIElementUpstream
 {
 	recieveUpstreamEvent: (Id, UpstreamEvent) => UpstreamEvent
 }
 
+export enum KeyTrigger {DOWN, UP, WINDOW_FOCUS_LOSS}
+
+export interface KeyModifiers
+{
+	alt: boolean
+	ctrl: boolean
+	shift: boolean
+	uninterrupted: boolean //no key changed state since this key was downed
+	alone: boolean //no other key is currently down, excluding the modifiers above
+}
+
+export interface DownstreamEvent
+{
+	key: string
+	code: number
+	trigger: KeyTrigger
+	modifiers?: KeyModifiers
+}
+
 export interface GUIElementDownstream
 {
-	attemptConsumeDownstreamEvent: (KeyboardEventInit) => boolean
+	recieveDownstreamEvent: (DownstreamEvent) => boolean
 }
 
 export interface Offset
@@ -67,19 +87,22 @@ export interface GUIProps
 
 export interface GUIState{}
 
-export abstract class GUIElement<P extends GUIProps, S extends GUIState, 
-	E extends UpstreamEvent> extends React.Component<P, S>
-	implements GUIElementUpstream
+export abstract class 
+	GUIElement<P extends GUIProps, S extends GUIState
+		, U extends UpstreamEvent, D extends DownstreamEvent>
+	extends React.Component<P, S>
+	implements GUIElementUpstream, GUIElementDownstream
 {
 	static defaultProps: GUIProps = 
 		{ parent: null
 		, offset: {left: 0, top: 0}
 		};
 
+	protected childrenToRecieveDownstreamEvent: Array<GUIElement<P, S, U, D>> = []
+
 	constructor(props)
 	{
 		super(props);
-
 	}
 
 	public recieveUpstreamEvent(childId: Id, event: UpstreamEvent): UpstreamEvent
@@ -87,6 +110,46 @@ export abstract class GUIElement<P extends GUIProps, S extends GUIState,
 		this.exposeUpstreamEvent(childId, event)
 		return this.sendUpstreamEvent(event);
 	}
+
+	public recieveDownstreamEvent(event: DownstreamEvent)
+	{
+		if(this.attemptConsumeDownstreamEvent(event))
+			return true;
+
+		return this.sendDownstreamEvent(event);
+	}
+
+	private sendDownstreamEvent(event: DownstreamEvent): boolean
+	{
+		for(const index in this.childrenToRecieveDownstreamEvent)
+			if(this.childrenToRecieveDownstreamEvent[index].recieveDownstreamEvent(event))
+				return true;
+
+		return false;
+	}
+
+	protected onKeyDown(event: DownstreamEvent): boolean {return false;}
+	protected onKeyUp(event: DownstreamEvent): boolean {return false;}
+	protected onWindowFocusLoss(event: DownstreamEvent): boolean {return false;}
+
+	protected onClick(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onContextMenu(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDoubleClick(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDrag(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragEnd(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragEnter(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragExit(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragLeave(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragOver(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDragStart(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onDrop(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseDown(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseEnter(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseLeave(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseMove(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseOut(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseOver(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
+	protected onMouseUp(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
 
 	protected createMouseEvent(childId: Id, mouseEvent: MouseEvent, 
 		trigger: MouseEventTriggerTypes): void
@@ -111,30 +174,6 @@ export abstract class GUIElement<P extends GUIProps, S extends GUIState,
 
 		this.sendUpstreamEvent(event);
 	}
-
-	protected sendUpstreamEvent(event: UpstreamEvent): UpstreamEvent
-	{
-		return this.props.parent.recieveUpstreamEvent(this.getId(), event);
-	}
-
-	protected onClick(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onContextMenu(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDoubleClick(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDrag(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragEnd(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragEnter(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragExit(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragLeave(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragOver(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDragStart(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onDrop(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseDown(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseEnter(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseLeave(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseMove(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseOut(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseOver(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
-	protected onMouseUp(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
 
 	private exposeUpstreamEvent(childId: Id, event: UpstreamEvent): UpstreamEvent
 	{
@@ -161,6 +200,21 @@ export abstract class GUIElement<P extends GUIProps, S extends GUIState,
 			case types.onMouseUp: return this.onMouseUp(childId, event);
 		}
 		return event;
+	}
+
+	private attemptConsumeDownstreamEvent(event: DownstreamEvent): boolean
+	{
+		switch(event.trigger)
+		{
+			case KeyTrigger.DOWN: return this.onKeyDown(event);
+			case KeyTrigger.UP: return this.onKeyUp(event);
+			case KeyTrigger.WINDOW_FOCUS_LOSS: return this.onWindowFocusLoss(event);
+		}
+	}
+
+	private sendUpstreamEvent(event: UpstreamEvent): UpstreamEvent
+	{
+		return this.props.parent.recieveUpstreamEvent(this.getId(), event);
 	}
 
 	private getId(): Id

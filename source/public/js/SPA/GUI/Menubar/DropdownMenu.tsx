@@ -1,6 +1,6 @@
 import * as React from 'react';	
 import {KeyMemory} from '../KeyMemory';
-import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases} from '../GUIElement';
+import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases, DownstreamEvent} from '../GUIElement';
 import {TypedReactChildren} from "../TypedReactChildren";
 
 import * as $ from 'jquery';
@@ -30,17 +30,21 @@ export interface DropdownMenuState extends GUIState
 	focusAt: number 
 }
 
-export interface DropdownMenuEvent extends UpstreamEvent
+export interface DropdownMenuUpstream extends UpstreamEvent
 {
-	closeParents: boolean
+	closeDropdown: boolean
 }
+
+export interface DropdownMenuDownstream extends DownstreamEvent{}
 
 export type Child = React.ReactElement<DropdownMenuProps>;
 
 const labelHeight = 18;
 
-export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuState, E extends DropdownMenuEvent>
-	extends GUIElement<DropdownMenuProps, DropdownMenuState, DropdownMenuEvent>
+export class 
+	DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuState
+		, U extends DropdownMenuUpstream, D extends DropdownMenuDownstream>
+	extends GUIElement<DropdownMenuProps, DropdownMenuState, U, D>
 {
 	static defaultProps: DropdownMenuProps = 
 		{ parent: null
@@ -168,7 +172,17 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 		return width;
 	}
 
-	/*override*/ protected onMouseEnter(id: Id, event: DropdownMenuEvent): DropdownMenuEvent
+	/*override*/ protected onKeyDown(event: any): boolean
+	{
+		return false;
+	}
+
+	/*override*/ protected onKeyUp(event: any): boolean
+	{
+		return false;
+	}
+
+	/*override*/ protected onMouseEnter(id: Id, event: U): U
 	{
 		if(event.phase !== EventPhases.ready)
 			return event;
@@ -182,7 +196,7 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 		return event;
 	}
 
-	/*override*/ protected onMouseLeave(id: Id, event: DropdownMenuEvent): DropdownMenuEvent
+	/*override*/ protected onMouseLeave(id: Id, event: U): U
 	{
 		if(event.phase !== EventPhases.ready)
 			return event;
@@ -195,9 +209,9 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 		return event;
 	}
 
-	/*override*/ protected onClick(id: Id, event: E): E
+	/*override*/ protected onClick(id: Id, event: U): U
 	{
-		if(event.closeParents)
+		if(event.closeDropdown)
 		{
 			this.setState(
 				{ focusAt:-1
@@ -214,7 +228,7 @@ export class DropdownMenu<P extends DropdownMenuProps, S extends DropdownMenuSta
 		{
 			child.action();
 			event.phase = EventPhases.consumed;
-			event.closeParents = true;
+			event.closeDropdown = true;
 			return event;
 		}
 		

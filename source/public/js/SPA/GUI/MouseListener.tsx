@@ -1,11 +1,11 @@
 import * as React from 'react';	
-import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, MouseEventTriggerTypes, UpstreamEvent} from './GUIElement';
+import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, MouseEventTriggerTypes, UpstreamEvent, DownstreamEvent} from './GUIElement';
 
 interface MouseListenerProps extends GUIProps{}
 interface MouseListenerState extends GUIState{}
 
 export class MouseListener 
-	extends GUIElement<MouseListenerProps, MouseListenerState, UpstreamEvent>
+	extends GUIElement<MouseListenerProps, MouseListenerState, UpstreamEvent, DownstreamEvent>
 {
 	static defaultProps: MouseListenerProps = 
 		{ parent: null
