@@ -1,6 +1,6 @@
 import * as React from 'react';	
-import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases} from '../GUIElement';
-import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, Styles, DropdownMenuUpstream, DropdownMenuDownstream, Child} from './DropdownMenu';
+import {GUIElement, GUIProps, GUIState, Offset, MouseEvent, Id, UpstreamEvent, EventPhases, DownstreamEvent} from '../GUIElement';
+import {DropdownMenu, DropdownMenuProps, DropdownMenuState, FocusTypes, Styles, DropdownMenuUpstream, DropdownMenuDownstream, Child, ArrowKeys} from './DropdownMenu';
 import * as $ from 'jquery';
 
 const menuHeight = 18;
@@ -19,14 +19,26 @@ export class Menubar
 		};
 
 	/*override*/ protected cssName = "Menubar"
-	
+	/*override*/ protected arrowKeys: ArrowKeys = 
+		{ nextElement: "ArrowRight"
+		, previousElement: "ArrowLeft"
+		, openMenu: "ArrowDown"
+		, closeMenu: "ArrowUp"
+		};
+
 	constructor(props: MenubarProps)
 	{
 		super(props);
-		this.state = 
-			{ focusType: FocusTypes.none
-			, focusAt: -1 
-			};
+		if(props.startFocusSelf)
+			this.state = 
+				{ focusType: FocusTypes.self
+				, focusAt: 0
+				};
+		else
+			this.state = 
+				{ focusType: FocusTypes.none
+				, focusAt: -1 
+				};
 	}
 
 	/*override*/ protected getStyles(): Styles
@@ -57,13 +69,14 @@ export class Menubar
 		return newStyles;
 	}
 
+
 	/*override*/ protected onMouseEnter(id: Id, event: MenubarUpstream): MenubarUpstream
 	{
 		if(event.phase !== EventPhases.ready)
 			return event;
 
-		const focusType = this.state.focusType === FocusTypes.child 
-			? FocusTypes.child
+		const focusType = this.state.focusType === FocusTypes.childFocus || this.state.focusType === FocusTypes.childOpen
+			? FocusTypes.childOpen
 			: FocusTypes.self;
 
 		this.setState(

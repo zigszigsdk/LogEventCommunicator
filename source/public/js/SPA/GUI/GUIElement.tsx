@@ -42,7 +42,6 @@ export interface UpstreamEvent
 	phase: EventPhases
 }
 
-
 export interface GUIElementUpstream
 {
 	recieveUpstreamEvent: (Id, UpstreamEvent) => UpstreamEvent
@@ -64,12 +63,13 @@ export interface DownstreamEvent
 	key: string
 	code: number
 	trigger: KeyTrigger
+	phase: EventPhases
 	modifiers?: KeyModifiers
 }
 
 export interface GUIElementDownstream
 {
-	recieveDownstreamEvent: (DownstreamEvent) => boolean
+	recieveDownstreamEvent: (DownstreamEvent) => DownstreamEvent
 }
 
 export interface Offset
@@ -111,26 +111,26 @@ export abstract class
 		return this.sendUpstreamEvent(event);
 	}
 
-	public recieveDownstreamEvent(event: DownstreamEvent)
+	public recieveDownstreamEvent(event: DownstreamEvent): DownstreamEvent
 	{
-		if(this.attemptConsumeDownstreamEvent(event))
-			return true;
+		event = this.sendDownstreamEvent(event);
 
-		return this.sendDownstreamEvent(event);
+		return this.attemptConsumeDownstreamEvent(event);
 	}
 
-	private sendDownstreamEvent(event: DownstreamEvent): boolean
+	private sendDownstreamEvent(event: DownstreamEvent): DownstreamEvent
 	{
 		for(const index in this.childrenToRecieveDownstreamEvent)
-			if(this.childrenToRecieveDownstreamEvent[index].recieveDownstreamEvent(event))
-				return true;
+			if(this.childrenToRecieveDownstreamEvent[index])
+				event = 
+					this.childrenToRecieveDownstreamEvent[index].recieveDownstreamEvent(event);
 
-		return false;
+		return event;
 	}
 
-	protected onKeyDown(event: DownstreamEvent): boolean {return false;}
-	protected onKeyUp(event: DownstreamEvent): boolean {return false;}
-	protected onWindowFocusLoss(event: DownstreamEvent): boolean {return false;}
+	protected onKeyDown(event: DownstreamEvent): DownstreamEvent {return event;}
+	protected onKeyUp(event: DownstreamEvent): DownstreamEvent {return event;}
+	protected onWindowFocusLoss(event: DownstreamEvent): DownstreamEvent {return event;}
 
 	protected onClick(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
 	protected onContextMenu(childId: Id, event: UpstreamEvent): UpstreamEvent {return event;} 
@@ -202,7 +202,7 @@ export abstract class
 		return event;
 	}
 
-	private attemptConsumeDownstreamEvent(event: DownstreamEvent): boolean
+	private attemptConsumeDownstreamEvent(event: DownstreamEvent): DownstreamEvent
 	{
 		switch(event.trigger)
 		{

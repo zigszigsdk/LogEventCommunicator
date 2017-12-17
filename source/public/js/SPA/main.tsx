@@ -22,33 +22,64 @@ function t3()
 	console.log("t3!");
 }
 
-class Main extends GUIRoot
+interface MainState
+{
+}
+
+interface MainProps
+{
+}
+
+class Main extends GUIRoot<MainProps, MainState>
 {
 	private menubarRef: any;
 
-	content = <div>
-			<Menubar ref={(x)=>this.menubarRef=x} parent={this} offset={{left:10, top:10}}>
-				<DropdownMenu label="File" hotkey="f">
-					<DropdownMenu label="Logout" hotkey="l" action={logout}/>
-				</DropdownMenu>
-				<DropdownMenu label="top menu" hotkey="t">
-					<DropdownMenu label="test1" hotkey="t" action={t1}/>
-					<DropdownMenu label="second menu" hotkey="s">
-						<DropdownMenu label="third menu" hotkey="t">
-							<DropdownMenu label="fourth menu" hotkey="f">
-								<DropdownMenu label="last menu" hotkey="l">
-									<DropdownMenu label="last label" hotkey="l" action={t2}/>
+	constructor(props)
+	{
+		super(props);
+	}
+	
+	protected getContent(): JSX.Element
+	{
+		return (
+			<div>
+				<Menubar 
+					ref={(x)=>this.menubarRef=x} 
+					parent={this} 
+					offset={{left:10, top:10}}
+					toggleFocusKey="Tab"
+				>
+					<DropdownMenu label="File" hotkey="f">
+						<DropdownMenu label="Logout" hotkey="l" action={logout}/>
+					</DropdownMenu>
+					<DropdownMenu label="top menu" hotkey="t">
+						<DropdownMenu label="test1" hotkey="t" action={t1}/>
+						<DropdownMenu label="some button" hotkey="o" action={t1}/>
+						<DropdownMenu label="second menu" hotkey="s">
+							<DropdownMenu label="third menu" hotkey="t">
+								<DropdownMenu label="fourth menu" hotkey="f">
+									<DropdownMenu label="last menu" hotkey="l">
+										<DropdownMenu label="last label" hotkey="l" action={t2}/>
+									</DropdownMenu>
 								</DropdownMenu>
 							</DropdownMenu>
+							<DropdownMenu label="really long label to change menusize" hotkey="r" action={t2}/>
 						</DropdownMenu>
-						<DropdownMenu label="really long label to change menusize" hotkey="r" action={t2}/>
-					</DropdownMenu>
-				</DropdownMenu>
-				<DropdownMenu label="bare topmenu item" hotkey="l" action={t3}/>
-			</Menubar>
-		</div>;
+						<DropdownMenu label="another button" hotkey="a" action={t1}/>
+						<DropdownMenu label="extra menu" hotkey="e">
+							<DropdownMenu label="nested extra menu" hotkey="n" action={t1}>
+							</DropdownMenu>
+						<DropdownMenu label="last button" hotkey="l" action={t1}/>
+						</DropdownMenu>
 
-	public recieveDownstreamEvent(event: DownstreamEvent): boolean
+					</DropdownMenu>
+					<DropdownMenu label="bare topmenu item" hotkey="l" action={t3}/>
+				</Menubar>
+			</div>
+		);
+	}
+
+	public recieveDownstreamEvent(event: DownstreamEvent): DownstreamEvent
 	{
 		return this.menubarRef.recieveDownstreamEvent(event);
 	}
@@ -58,6 +89,5 @@ class Main extends GUIRoot
 		return event;
 	}
 }
-
 
 ReactDOM.render(<Main/>, document.getElementById('react-root'));

@@ -19,15 +19,17 @@ export interface DropdownMenuProps extends GUIProps
 	label?: string
 	hotkey?: string
 	action?: ()=>void
+	startFocusSelf?: boolean
+	toggleFocusKey?: string
 }
 
-export enum FocusTypes {none, self, child};
+export enum FocusTypes {none, self, childOpen, childFocus};
 export enum ChildTypes {label, submenu};
 
 export interface DropdownMenuState extends GUIState
 {
 	focusType: FocusTypes
-	focusAt: number 
+	focusAt: number
 }
 
 export interface DropdownMenuUpstream extends UpstreamEvent
@@ -35,9 +37,20 @@ export interface DropdownMenuUpstream extends UpstreamEvent
 	closeDropdown: boolean
 }
 
-export interface DropdownMenuDownstream extends DownstreamEvent{}
+export interface DropdownMenuDownstream extends DownstreamEvent
+{
+	closeDropdown: boolean
+}
 
 export type Child = React.ReactElement<DropdownMenuProps>;
+
+export interface ArrowKeys
+{
+	nextElement: string
+	previousElement: string
+	openMenu: string
+	closeMenu: string
+};
 
 const labelHeight = 18;
 
@@ -51,22 +64,37 @@ export class
 		, offset: {left: 0, top: 0}
 		, label: ""
 		, hotkey: ""
+		, startFocusSelf: false
 		};
 
 	protected cssName: string = "DropdownMenu";
-	protected subElements: Array<DropdownMenuProps> = []
+	protected arrowKeys: ArrowKeys = 
+		{ nextElement: "ArrowDown"
+		, previousElement: "ArrowUp"
+		, openMenu: "ArrowRight"
+		, closeMenu: "ArrowLeft"
+		};
+
+	private subElements: Array<DropdownMenuProps> = []
 
 	constructor(props: DropdownMenuProps)
 	{
 		super(props);
-		this.state = 
-			{ focusType: FocusTypes.none
-			, focusAt: -1 
-			};
+		if(props.startFocusSelf)
+			this.state = 
+				{ focusType: FocusTypes.self
+				, focusAt: 0
+				};
+		else
+			this.state = 
+				{ focusType: FocusTypes.none
+				, focusAt: -1 
+				};
 	}
 
 	public render(): JSX.Element
 	{
+		this.cleanChildRefs();
 		let menuItems: Array<JSX.Element> = new Array();
 		let submenus: Array<JSX.Element> = new Array();
 
@@ -96,17 +124,21 @@ export class
 					</span>
 				</MouseListener>
 			);
-			
-			if(this.state.focusType === FocusTypes.child &&
-				this.state.focusAt === index
-			)
+			const ft = this.state.focusType;
+			if(this.state.focusAt === index
+				&& (ft === FocusTypes.childFocus || ft === FocusTypes.childOpen))
 			{
 				child.props.offset = styles.submenu;
 				child.props.parent = this;
+
 				submenus.push(
-					<span key={"submenu"+index}>
-						{child}
-					</span>
+					<DropdownMenu
+						{...child.props} 
+						key={"submenu"+index}
+						ref={(x:DropdownMenu<P,S,U,D>)=>
+							this.childrenToRecieveDownstreamEvent = [x]}
+						startFocusSelf={this.state.focusType === FocusTypes.childFocus}
+					/>
 				);
 			}
 
@@ -146,7 +178,6 @@ export class
 				, top: this.props.offset.top 
 				}
 		};
-
 	}
 
 	/*override*/ protected incrementStyles(child: Child, prevChild: Child, newStyles: Styles): Styles
@@ -172,27 +203,103 @@ export class
 		return width;
 	}
 
-	/*override*/ protected onKeyDown(event: any): boolean
+	protected cleanChildRefs()
 	{
-		return false;
+		this.subElements = [];
+		this.childrenToRecieveDownstreamEvent = [];	
 	}
 
-	/*override*/ protected onKeyUp(event: any): boolean
+	/*override*/ protected onKeyDown(event: DropdownMenuDownstream): DropdownMenuDownstream
 	{
-		return false;
+		if(event.closeDropdown)
+			this.setState({focusAt:-1, focusType: FocusTypes.none})
+
+		if(event.phase === EventPhases.consumed)
+			return event;
+
+		if(this.state.focusType === FocusTypes.none)
+		{
+			if(event.key === this.props.toggleFocusKey)
+			{
+				event.phase = EventPhases.consumed;
+				this.setState({focusAt: 0, focusType: FocusTypes.self})
+			}
+			return event;
+		}
+
+		switch(event.key)
+		{
+			case this.props.toggleFocusKey:
+				this.setState({focusAt: -1, focusType: FocusTypes.none})
+				event.phase = EventPhases.consumed;
+				break;
+
+			case this.arrowKeys.nextElement:
+				if(this.state.focusAt === this.subElements.length-1 
+					|| this.state.focusAt === -1
+				)
+					this.setState({focusAt: 0, focusType: FocusTypes.self})
+				else
+					this.setState({focusAt: this.state.focusAt+1, focusType: FocusTypes.self})
+				event.phase = EventPhases.consumed;
+				break;
+				
+			case this.arrowKeys.previousElement:
+				if(this.state.focusAt <= 0)
+					this.setState({focusAt: this.subElements.length-1, focusType: FocusTypes.self})
+				else
+					this.setState({focusAt: this.state.focusAt-1, focusType: FocusTypes.self})
+				event.phase = EventPhases.consumed;
+				break;
+
+			case "Enter":
+				if(this.subElements[this.state.focusAt].action)
+				{
+					this.subElements[this.state.focusAt].action();
+					event.closeDropdown = true;
+					event.phase = EventPhases.consumed;
+					break;
+				}
+				//fallthrough
+
+			case this.arrowKeys.openMenu:
+				if(this.state.focusType === FocusTypes.childFocus 
+					|| this.state.focusAt === -1
+					|| this.subElements[this.state.focusAt].action
+				)
+					break;
+
+				this.setState({focusType: FocusTypes.childFocus})
+				event.phase = EventPhases.consumed;
+				break;
+
+			case this.arrowKeys.closeMenu:
+			case "Escape":
+				if(this.state.focusType !== FocusTypes.childFocus)
+					break;
+
+				this.setState({focusType: FocusTypes.self});
+				event.phase = EventPhases.consumed;
+				break;
+		}
+		return event;
 	}
 
 	/*override*/ protected onMouseEnter(id: Id, event: U): U
 	{
-		if(event.phase !== EventPhases.ready)
+		if(event.phase !== EventPhases.ready || id.type !== ChildTypes.label)
 			return event;
 
+		event.phase = EventPhases.consumed;
+		
+		if(this.state.focusAt === id.index)
+			return event;
+		
 		this.setState(
 			{ focusAt: id.index
 			, focusType: FocusTypes.self
 			}
 		);
-		event.phase = EventPhases.consumed;
 		return event;
 	}
 
@@ -232,19 +339,23 @@ export class
 			return event;
 		}
 		
-		let focusType: FocusTypes;		
+		let focusType: FocusTypes;
 
 		switch(this.state.focusType)
 		{
 			case FocusTypes.none:
 			case FocusTypes.self:
-				focusType = FocusTypes.child;
+				focusType = FocusTypes.childOpen;
 			break;
-			case FocusTypes.child:
+			case FocusTypes.childFocus:
+			case FocusTypes.childOpen:
 				if(id.index === this.state.focusAt)
-					focusType = FocusTypes.none;
+				{
+					focusType = FocusTypes.self;
+					this.cleanChildRefs();
+				}
 				else
-					focusType = FocusTypes.child;
+					focusType = FocusTypes.childOpen;
 			break;
 		}
 

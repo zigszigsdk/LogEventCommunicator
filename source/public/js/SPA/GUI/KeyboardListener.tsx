@@ -1,5 +1,5 @@
 import * as React from "react";
-import {GUIElementDownstream, KeyTrigger} from "./GUIElement";
+import {GUIElementDownstream, KeyTrigger, EventPhases} from "./GUIElement";
 import * as $ from 'jquery';
 
 interface Props
@@ -89,15 +89,16 @@ export class KeyboardListener extends React.Component<Props, State>
 		const keysDownCount: number = Object.keys(this.KeycodesDownToKeyname).length;
 
 		this.props.passEventsTo.recieveDownstreamEvent(
-			{	key: event.key 
-			,	code: event.keyCode
-			,	trigger: trigger
-			,	modifiers: 
-				{	alt: event.altKey
-				,	ctrl: event.ctrlKey
-				,	shift: event.shiftKey
-				,	alone: keysDownCount === modifiersDownCount
-				,	uninterrupted: event.keyCode === this.lastKeycodeDown
+			{ key: event.key 
+			, code: event.keyCode
+			, trigger: trigger
+			, phase: EventPhases.ready
+			, modifiers: 
+				{ alt: event.altKey
+				, ctrl: event.ctrlKey
+				, shift: event.shiftKey
+				, alone: keysDownCount === modifiersDownCount
+				, uninterrupted: event.keyCode === this.lastKeycodeDown
 				}
 			}
 		);
